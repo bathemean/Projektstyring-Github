@@ -1,0 +1,38 @@
+body {
+    font-family: Verdana;
+    font-size: 0.7em;
+    margin: 20px 0;
+}
+
+#main {
+    width: 960px;
+    margin: 0 auto;
+    background: #f00;
+}
+
+#optionsContainer {
+    width: 300px;
+    float: left;
+}
+
+    #optionsContainer h1 {
+        font-size: 200%;
+        color: #f00;
+    }
+
+#calendarContainer {
+    width: 640px;
+    float: right;
+}
+	
+	#calendarContainer  table{
+	width: 640px;
+	border-left: 1px solid #000;
+	border-bottom: 1px solid #000;
+	}
+	
+	#calendarContainer td{
+	border-right: 1px solid #000;
+	border-top: 1px solid #000;
+	height: 25px;
+	}
