@@ -8,27 +8,38 @@
     <title>NailBeauty</title>
 
     <link rel="stylesheet" href="css/main.css" type="text/css" />
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="js/calendarPicker.js"></script>
 </head>
 
 <body>
 
     <div id="main">
         <?php 
+            error_reporting(E_ERROR | E_WARNING | E_PARSE);
+            include('classes/Database.php');
+
             if(isset($_POST['submit'])){
-              $db = new PDO('mysql:host=localhost;dbname=NailBeauty', "root", "");
-	          $query = $db->prepare("
-	            INSERT INTO bookings VALUES (?,?,?)
-	          ");
+              
+             
+
+              $db = new Database();
+
+              $query = $db->get()->prepare("
+                INSERT INTO bookings VALUES (?,?,?)
+              ");
               $query->execute(array($_POST['bookingdate'],$_POST['employee'],$_POST['treatment']));
+
             }
-		?>
+        ?>
         <form method="POST">
-		<div id="optionsContainer">
+        <div id="optionsContainer">
 
             <div class="optionsPanel">
                 <h1>Vælg behandlinger</h1>
                 
-                <input type="radio" name="treatment" value="1"/> Span-manicure (60 min)
+                <input type="radio" name="treatment" value="1" checked="checked" /> Span-manicure (60 min)
                 <br />
                 <input type="radio" name="treatment" value="2"/> Manicure (30 min)
                 <br />
@@ -40,7 +51,7 @@
             <div class="optionsPanel">
                 <h1>Vælg medarbejder(e)</h1>
                 
-                <input type="radio" name="employee" value="a" /> Medarbejder A
+                <input type="radio" name="employee" value="a" checked="checked" /> Medarbejder A
                 <br />
                 <input type="radio" name="employee" value="b" /> Medarbejder B
                 <br />
@@ -55,40 +66,16 @@
 
             <h1>calendar</h1>
 
-            <table cellspacing="0">
-
+            
               <?php
 
-                $weekdays = array('','Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag', 'Søndag');
-				$time = 930;
-				$n = 2;
-                for($i=0; $i<=32; $i++) {
-					
-					$n++;
-					$time += 15;
-					echo '<tr>';
-					
-                    for($j=0; $j<=7; $j++) {
-                            echo '<td>';
-							if ($i==0) 
-								echo $weekdays[$j];
-							
-							if ($j==0 && $n==4) {
-								$time += 40; $n=0;	echo $time/100 . '.00';
-								}
-							
-							if ($j!=0 && $i!=0) 
-								echo '<input type="checkbox" name="bookingdate" value="'. $time .'-'. $j .'" />';
-								
-                            echo '</td>';
-					}
-					echo '</tr>';
-					
-				}
+                include('classes/calendar.php');
+                    
+                $calendar = new Calendar();
+                $calendar->render();
 
               ?>
 
-            </table>
          <input type="submit" name="submit"/>  
         </div><!-- #calendarContainer ends -->
     </form>

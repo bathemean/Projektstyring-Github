@@ -17,7 +17,7 @@ body {
 
     #optionsContainer h1 {
         font-size: 200%;
-        color: #f00;
+        color: #000;
     }
 
 #calendarContainer {
@@ -25,14 +25,25 @@ body {
     float: right;
 }
 	
-	#calendarContainer  table{
-	width: 640px;
-	border-left: 1px solid #000;
-	border-bottom: 1px solid #000;
+	#calendar {
+    	width: 640px;
+    	border-left: 1px solid #000;
+    	border-bottom: 1px solid #000;
 	}
 	
-	#calendarContainer td{
-	border-right: 1px solid #000;
-	border-top: 1px solid #000;
-	height: 25px;
+	#calendar td, #calendar th {
+    	border-right: 1px solid #000;
+    	border-top: 1px solid #000;
+    	height: 25px;
+        padding: 0;
 	}
+
+    #calendar .selected {
+        background: #ccc;
+    }
+
+    #calendar .focus {
+        background: #eee;
+    }
+
+    
