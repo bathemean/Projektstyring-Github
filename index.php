@@ -11,6 +11,7 @@
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="js/calendarPicker.js"></script>
+    <script src="js/calendarScheduleLimiter.js"></script>
 </head>
 
 <body>
@@ -19,12 +20,13 @@
         <?php 
             error_reporting(E_ERROR | E_WARNING | E_PARSE);
             include('classes/Database.php');
+            $db = new Database();
 
             if(isset($_POST['submit'])){
               
              
 
-              $db = new Database();
+              
 
               $query = $db->get()->prepare("
                 INSERT INTO bookings VALUES (?,?,?)
@@ -38,26 +40,82 @@
 
             <div class="optionsPanel">
                 <h1>Vælg behandlinger</h1>
-                
-                <input type="radio" name="treatment" value="1" checked="checked" /> Span-manicure (60 min)
-                <br />
-                <input type="radio" name="treatment" value="2"/> Manicure (30 min)
-                <br />
-                <input type="radio" name="treatment" value="3"/> Pedicure (30 min)
-                <br />
-                <input type="radio" name="treatment" value="4"/> Fodbehandling v/ statsaut. fodterapeaut (60 min)
+
+                <?php
+
+                    $getTreatments = $db->get()->query("
+                            SELECT treatmentname name, treatmentduration duration
+                            FROM treatments
+                        ");
+                    $treatments = $getTreatments->fetchAll();
+
+                    $n = 0; // create a counter so we only check the first treatment
+
+                    foreach($treatments as $t) {
+
+                        echo '<input type="hidden" id="treatmentDuration" 
+                            name="'. $t['name'] .'" value="'. $t['duration'] .'" />';
+
+                        echo '<input type="radio" name="treatment" value="'. $t['name'] .'" 
+                         '. ($n ==0 ? 'checked' : false) .' /> ';
+
+                        echo $t['name'] .' ('. $t['duration'] .' min)';
+
+                        echo '<br />';
+
+                        $n++;
+
+                    }
+
+                ?>
+
             </div><!-- .optionsPanel ends -->
 
             <div class="optionsPanel">
                 <h1>Vælg medarbejder(e)</h1>
                 
-                <input type="radio" name="employee" value="a" checked="checked" /> Medarbejder A
-                <br />
-                <input type="radio" name="employee" value="b" /> Medarbejder B
-                <br />
-                <input type="radio" name="employee" value="c" /> Medarbejder C
-                <br />
-                <input type="radio" name="employee" value="d" /> Medarbejder D
+                <?php
+
+                    $getEmployees = $db->get()->query("
+                        SELECT employeeid id, employeename name
+                        FROM employees
+                    ");
+                    $employees = $getEmployees->fetchAll();
+
+                    $n = 0;
+
+                    foreach($employees as $e) {
+
+                        $getSchedule = $db->get()->prepare("
+                                SELECT day, TIME_TO_SEC(start) start, TIME_TO_SEC(end) end
+                                FROM employeeschedule
+                                WHERE employeeid = {$e['id']}
+                            ");
+                        $getSchedule->execute();
+                        $schedule = $getSchedule->fetchAll();
+
+                        foreach($schedule as $s) {
+                            echo '<input type="hidden" id="'. $e['id'] .'"  
+                                name="scheduleStart" day="'.$s['day'].'" value="'. $s['start'] .'" />';
+                            echo '<input type="hidden" id="'. $e['id'] .'" 
+                                name="scheduleEnd" day="'.$s['day'].'" value="'. $s['end'] .'" />';
+
+                        }
+
+
+                        echo '<input type="radio" name="employeeid" value="'. $e['id'] .'" 
+                         '. ($n ==0 ? 'checked' : false) .' /> ';
+
+                        echo $e['name'];
+
+                        echo '<br />';
+
+                        $n++;
+
+                    }
+
+                ?>
+
             </div><!-- .optionsPanel ends -->
 
         </div><!-- #optionsContainer ends -->
@@ -71,7 +129,7 @@
 
                 include('classes/calendar.php');
                     
-                $calendar = new Calendar();
+                $calendar = new Calendar($db);
                 $calendar->render();
 
               ?>

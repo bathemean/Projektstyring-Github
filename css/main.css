@@ -37,6 +37,9 @@ body {
     	height: 25px;
         padding: 0;
 	}
+    #calendar td {
+        background: #fff;
+    }
 
     #calendar .selected {
         background: #ccc;
@@ -46,4 +49,11 @@ body {
         background: #eee;
     }
 
+    #calendar .unavailable {
+        background: #ddd;
+    }
+
+    #calendar .booked {
+        background: #CC4D49;
+    }
     

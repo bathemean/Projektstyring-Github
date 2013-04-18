@@ -1,11 +1,9 @@
 $(document).ready(function() {
-
 	// stores the duration of the treatments in number of quarter hours
 	var treatmentDuration = new Array();
-		treatmentDuration[1] = 60/15;
-		treatmentDuration[2] = 30/15;
-		treatmentDuration[3] = 30/15;
-		treatmentDuration[4] = 60/15;
+	$('input#treatmentDuration').each(function() {
+		treatmentDuration[ $(this).attr('name') ] = $(this).val()/15;
+	});
 
 	// stores the selected treatment, and updates it whenever it changes
 	var selectedTreatment = $('input[name="treatment"]').val();
@@ -31,6 +29,24 @@ $(document).ready(function() {
  			cells.push( selectedCellX + ',' + newY);
  		}
  		return cells;
+
+ 	}
+
+
+ 	// checks if a group of cells is booked or unavailable
+ 	var isAvailable = function(cells) {
+
+ 		var res = new Array();
+
+ 		for(c in cells) {
+	 		if( $('td[id="' + cells[c] + '"]').hasClass('booked') ||
+	 		  $('td[id="' + cells[c] + '"]').hasClass('unavailable')  )
+	 			res.push(true);
+	 		else
+	 			res.push(false);
+ 		}
+ 		
+ 		return res;
 
  	}
 
@@ -70,9 +86,16 @@ $(document).ready(function() {
  		$('#calendar td.focus').removeClass('focus');
 
 		cells = affectedCells( $(this) );
- 		for(c in cells) {
- 			selectBackground( cells[c] );
- 		}
+ 		 			
+		// check if one of the cells are already booked
+ 		if(isAvailable(cells).indexOf(true) == -1) {
+	 		for(c in cells) {
+	 			selectBackground( cells[c] );
+	 		}
+	 	} else {
+	 		alert('Dette tidspunkt er optaget')
+	 	}
+
 	});
 
 });
