@@ -5,13 +5,15 @@ $(document).ready(function() {
 		treatmentDuration[ $(this).attr('name') ] = $(this).val()/15;
 	});
 
+
 	// stores the selected treatment, and updates it whenever it changes
-	var selectedTreatment = $('input[name="treatment"]').val();
- 	$('input[name="treatment"]').change(function() {
+	var selectedTreatment = $('input[name="treatmentName"]').val();
+ 	$('input[name="treatmentName"]').change(function() {
  		selectedTreatment = $(this).val();
+
  	});
 
- 	 	// returns an array of the cells to recolor, based on the cell the mouse
+ 	 // returns an array of the cells to recolor, based on the cell the mouse
  	// is currently focussing, and the duration of the treatment (# of quarters)
  	var affectedCells = function(cell) {
  		
@@ -80,6 +82,9 @@ $(document).ready(function() {
  	}
 
 	$('#calendar td').click(function() {
+
+		$('input[name="bookingdate"]').val( $(this).attr('value') );
+		console.log( $('input[name="bookingdate"]').val() );
 		
 		// remove all .selected and .focus classes from table cells
 		$('#calendar td.selected').removeClass('selected');

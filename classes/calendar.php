@@ -3,29 +3,59 @@
 
     class Calendar {
 
+        private $CALENDAR_START = 36000; // 10 hours in seconds
+        private $WEEKDAYS = array('Søndag', 'Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag');
+        
         private $db;
-        private $WEEKDAYS = array('','Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag', 'Søndag');
         private $booked;
 
-        public function __construct($database) {
-            $this->db = $database->get();
+        public function __construct() {
+            include_once('Database.php');
+            $this->db = new Database();
+            $this->db = $this->db->get();
             $this->booked = array();
         }
 
-        public function render() {
+        public function navigation() {
+            echo '<div id="calendarNavigation">';
+                echo '<a href="" id="calNavLeft"><img src="img/arrow-left.png" /></a>';
+                echo '<a href="" id="calNavRight"><img src="img/arrow-right.png" /></a>';
+            echo '</div>';
+        }
+
+        public function render($start) {
 
             $getBookings = $this->db->query("
-                                SELECT UNIX_TIMESTAMP(bookingdate) date, treatmentduration duration
+                                SELECT bookingdate date, treatmentduration duration
                                 FROM bookings JOIN treatments
                                     ON bookings.treatmentname = treatments.treatmentname
                             ");
-            $bookings = $getBookings->fetchAll();            
+            $bookings = $getBookings->fetchAll();
+
+            foreach($bookings as $b) {
+                $i = $b['duration']/15;
+
+                for($j = 0; $j < $i; $j++) {
+                    // Example: a treatment has a duration of 60 minutes (4 quarters).
+                    // we add 4 items to the array, one for each calendar cell we want to
+                    // mark.
+                    array_push($this->booked, ($b['date'] + ($j * 900)) );
+                }
+            }         
 
 
-            $date = strtotime('monday this week');
-            $time = strtotime('10:00', $time);
+            if($start == 'monday this week') {
+                $date = strtotime($start);
+            } else {
+                $date = date($start);
+            }
+
+            $time = $this->CALENDAR_START;
             $n = 2;
-            
+
+            // stores the selected date for data to db query
+            echo '<input type="hidden" name="bookingdate" value="" />';
+           
             echo '<table id="calendar" cellspacing="0">';
 
             for($y = 0; $y<=32; $y++) {
@@ -39,10 +69,14 @@
                     if ($y == 0) {
 
                         echo '<th>';
-                            echo $this->WEEKDAYS[$x];
-
+                            
                             if($x != 0) {
-                                echo '<br />'. date('d-m', $date);
+                                echo $this->WEEKDAYS[date('w', $date)];
+
+                                echo '<input type="hidden" id="'. $x .'" name="unixdate" value="'. $date .'" />';
+                                echo '<br /> <span id="date">';
+                                echo date('d-m', $date);
+                                echo '</span>';
                                 $date = strtotime('+1 day', $date);
                             }
 
@@ -71,23 +105,14 @@
                             time="'.$time.'" 
                             value="'. ($date + $time) .'"
                             class="unavailable ';                       
-                            
-                            foreach($bookings as $b) {
-                                
-                                if( unixTimezoneConvert($b['date'], 
-                                    'Europe/Copenhagen') == ($date+$time)) { 
-                                    
-                                    echo 'booked'; 
 
-                                    array_push($this->booked, ($x.','.($y+1)) );
-
-                                }
-
-                                if( in_array(($x.','.$y), $this->booked) ) {
+                                // we check if the current cell is already booked
+                                if( in_array(($date + $time), $this->booked) ) {
                                     echo 'booked';
                                 }
-                            }
+
                         echo '" ">';
+
                         echo '</td>';
 
                         $date = strtotime('+1 day', $date);

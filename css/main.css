@@ -5,9 +5,8 @@ body {
 }
 
 #main {
-    width: 960px;
+    width: 940px;
     margin: 0 auto;
-    background: #f00;
 }
 
 #optionsContainer {
@@ -56,4 +55,8 @@ body {
     #calendar .booked {
         background: #CC4D49;
     }
+
+#calendarNavigation #calNavRight {
+    float: right;
+}
     

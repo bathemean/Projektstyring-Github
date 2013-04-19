@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
 	var selectedEmployee = $('input[name=employeeid]').val();
 	// when a new employee is selected
 	$('input[name="employeeid"]').change(function() {

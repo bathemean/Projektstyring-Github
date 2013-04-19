@@ -10,8 +10,7 @@
     <link rel="stylesheet" href="css/main.css" type="text/css" />
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script src="js/calendarPicker.js"></script>
-    <script src="js/calendarScheduleLimiter.js"></script>
+    
 </head>
 
 <body>
@@ -19,19 +18,15 @@
     <div id="main">
         <?php 
             error_reporting(E_ERROR | E_WARNING | E_PARSE);
-            include('classes/Database.php');
+            require('classes/Database.php');
             $db = new Database();
 
             if(isset($_POST['submit'])){
               
-             
-
-              
-
-              $query = $db->get()->prepare("
+             $query = $db->get()->prepare("
                 INSERT INTO bookings VALUES (?,?,?)
               ");
-              $query->execute(array($_POST['bookingdate'],$_POST['employee'],$_POST['treatment']));
+              $query->execute(array($_POST['bookingdate'],$_POST['employeeid'],$_POST['treatmentName']));
 
             }
         ?>
@@ -56,7 +51,7 @@
                         echo '<input type="hidden" id="treatmentDuration" 
                             name="'. $t['name'] .'" value="'. $t['duration'] .'" />';
 
-                        echo '<input type="radio" name="treatment" value="'. $t['name'] .'" 
+                        echo '<input type="radio" name="treatmentName" value="'. $t['name'] .'" 
                          '. ($n ==0 ? 'checked' : false) .' /> ';
 
                         echo $t['name'] .' ('. $t['duration'] .' min)';
@@ -118,24 +113,25 @@
 
             </div><!-- .optionsPanel ends -->
 
+            <div style="text-align: center">
+                <br />
+                <input type="submit" name="submit" value="Book tid" />  
+            </div>
+
         </div><!-- #optionsContainer ends -->
 
+        <script>
+            // spawn the calendar on page load
+            $(document).ready(function() {
+                $('div#calendarContainer').load('calendar.php');
+            });
+        </script>
+        
         <div id="calendarContainer">
+        </div>
 
-            <h1>calendar</h1>
-
-            
-              <?php
-
-                include('classes/calendar.php');
-                    
-                $calendar = new Calendar($db);
-                $calendar->render();
-
-              ?>
-
-         <input type="submit" name="submit"/>  
-        </div><!-- #calendarContainer ends -->
+           
+        
     </form>
     </div><!-- #main ends -->
 
