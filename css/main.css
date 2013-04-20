@@ -59,4 +59,11 @@ body {
 #calendarNavigation #calNavRight {
     float: right;
 }
-    
+
+
+label {
+    display: block;
+    float: left;
+    width: 80px;
+    padding-top: 5px;
+}

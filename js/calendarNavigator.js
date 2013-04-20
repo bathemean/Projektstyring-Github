@@ -16,7 +16,7 @@ $(document).ready(function() {
 
     var advance = function(start) {
 
-        $('div#calendarContainer').load('calendar.php?start=' + start);
+        $('div#calendarContainer').load('pages/calendar.php?start=' + start);
 
     }
 

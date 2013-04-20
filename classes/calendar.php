@@ -1,18 +1,22 @@
 <?php
-    include ('time.php');
+    include_once('functions.php');
 
     class Calendar {
 
         private $CALENDAR_START = 36000; // 10 hours in seconds
-        private $WEEKDAYS = array('Søndag', 'Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag');
         
         private $db;
         private $booked;
+        private $weekdays;
 
         public function __construct() {
             include_once('Database.php');
             $this->db = new Database();
             $this->db = $this->db->get();
+
+            include_once('globals.php');
+            $this->weekdays = $WEEKDAYS;
+
             $this->booked = array();
         }
 
@@ -71,7 +75,7 @@
                         echo '<th>';
                             
                             if($x != 0) {
-                                echo $this->WEEKDAYS[date('w', $date)];
+                                echo $this->weekdays[date('w', $date)];
 
                                 echo '<input type="hidden" id="'. $x .'" name="unixdate" value="'. $date .'" />';
                                 echo '<br /> <span id="date">';
