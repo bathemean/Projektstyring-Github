@@ -65,7 +65,7 @@
                 foreach($employees as $e) {
 
                     $getSchedule = $db->get()->prepare("
-                            SELECT day, TIME_TO_SEC(start) start, TIME_TO_SEC(end) end
+                            SELECT day, start, end
                             FROM empSchedule
                             WHERE employeeid = {$e['id']}
                         ");

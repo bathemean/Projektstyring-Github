@@ -2,11 +2,29 @@ $(document).ready(function() {
 
     var d = $('#dayCounter').val();
 
+    var timeSelect = function(name) {
+        
+        var hourOpts;
+        var minOpts
+
+        for(h = 1; h <= 24; h++) {
+            var selected = (h == 10) ? 'selected' : '';
+            hourOpts += '<option '+ selected +' value="'+ h +'">'+ h +'</option>';
+        }
+
+        for(m = 0; m < 4; m++) {
+            minOpts += '<option value="'+ (m * 15) +'">'+ (m * 15) +'</option>';
+        }
+
+        return '<select name="'+ name +'-hours">'+ hourOpts +'</select>:\
+                <select name="'+ name +'-min">'+ minOpts +'</select>';
+    }
+
     var html = function(n) { return '\
         <tr id="' + n + '">\
             <td>\
                 <label for="' + n + '">\
-                    <select id="' + n + '">\
+                    <select id="' + n + '" name="' + n + '-day">\
                         <option value="1" >Mandag</option>\
                         <option value="2" >Tirsdag</option>\
                         <option value="3" >Onsdag</option>\
@@ -19,10 +37,10 @@ $(document).ready(function() {
             </td>\
 \
             <td>\
-                <input type="text" id="' + n + '" name="' + n + '-start" />\
+                '+ timeSelect(n+'-start') +'\
             </td>\
             <td>\
-                <input type="text" id="' + n + '" name="' + n + '-end" />\
+                '+ timeSelect(n+'-end') +'\
             </td>\
 \
             <td>\
@@ -31,16 +49,15 @@ $(document).ready(function() {
         </tr>';
     }
 
-    
-    $('#addDay').click(function() {
-
-        
-
+    var addDay = function() {
         d++;
         $('#dayCounter').val(d);
-
         $('#scheduleDays tr:last').after(html(d));
+    }
 
+    
+    $('#addDay').click(function() {
+        addDay();        
     });
 
     $(document).on('click', 'a[name="removeDay"]', function() {
@@ -51,5 +68,9 @@ $(document).ready(function() {
         return false;
 
     });
+
+    if(d == 0) {
+        addDay();
+    }
 
 });

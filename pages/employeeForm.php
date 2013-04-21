@@ -1,5 +1,7 @@
 <script src="js/scheduleDayManager.js"></script>
 
+<a href="?p=employeeAdmin">< tilbage</a><br /><br />
+
 <form method="POST">
 
 	<?php
@@ -32,7 +34,51 @@
 
 		}
 
+
+		if(isset($_POST['submit']) && $mode == 'insert') {
+
+			try{
+				$db->get()->beginTransaction();
+
+				$query = $db->get()->prepare("
+						INSERT INTO employees
+						(employeename)
+						VALUES (?)
+					");
+				$query->execute( array($_POST['employeename']) );
+
+				$id = $db->get()->lastInsertId();
+
+				$n = 1;
+				while($_POST[ $n . '-start-hours']) {
+
+					$start = ($_POST[$n .'-start-hours'] * 3600) + ($_POST[$n .'-start-min'] * 60);
+					$end = ($_POST[$n .'-end-hours'] * 3600) + ($_POST[$n .'-end-min'] * 60);
+					$end -= 900; // subtract 15 minutes from end time, since calendar hands time slots by quarters
+					
+					$query = $db->get()->prepare("
+							INSERT INTO empSchedule
+							(employeeid, day, start, end) VALUES
+							(:id, :day, :start, :end)
+						");
+					$query->execute(array(':id' => $id,
+										  ':day' => $_POST[ $n . '-day'],
+										  ':start' => $start,
+										  ':end' => $end));
+
+
+					$n++;
+				}
+			} catch(PDOException $e) {
+				$db->get()->rollback();
+				echo $e->getMessage();
+			}
+
+		}
+
 	?>
+
+	<div style="clear: both"></div>
 
 	<label for="employeename">Navn: </label>
 	<input type="text" id="employeename" name="employeename" value="<?php if($mode == 'update') { echo $employee['name']; } ?>" />
@@ -65,19 +111,48 @@
 			foreach($schedule as $s) {
 
 				$n++;
+
+				$startPieces = explode(':', $s['start']);
+				$endPieces = explode(':', $s['end']);
 				
 				echo '<tr id="'. $n .'">';
 
 				echo '<td><label for="'. $s['day'] .'">';
-					echo '<select id="'. $n .'">';
+					echo '<select id="'. $n .'" name="'. $n .'-day">';
 					foreach($weekdays as $key => $wkday) {
 						echo '<option value="'. ($key + 1) .'" '. ($s['day'] == $key ? "selected" : "") .'>'. $wkday .'</option>';
 					}
 					echo '</select>';
 				echo '</label></td>';
 
-				echo '<td><input type="text" id="'. $n .'" name="'. $n .'-start" value="'. $s['start'] .'" /></td>';
-				echo '<td><input type="text" id="'. $n .'" name="'. $n .'-end" value="'. $s['end'] .'" /></td>';
+				echo '<td>';
+					echo '<select name="'. $n .'-start-hour">';
+						for($h = 1; $h <= 24; $h++) {
+							echo '<option '. ($mode == 'insert' ? ($h == 10 ? 'selected' : '') : ($h == $startPieces[0] ? 'selected' : '')) .' value="'. $h .'">'. $h .'</option>';
+						}
+					echo '</select>:';
+					echo '<select name="'. $n .'-start-min">';
+						for($m = 0; $m < 4; $m++) {
+							echo '<option '. ($mode == 'update' && ($m * 15) == $startPieces[1] ? 'selected' : '') .' value="'. ($m * 15) .'">'. ($m * 15) .'</option>';
+						}
+					echo '</select>';
+				echo '</td>';
+
+				echo '<td>';
+					echo '<select name="'. $n .'-end-hour">';
+						for($h = 1; $h <= 24; $h++) {
+							echo '<option '. ($mode == 'insert' ? ($h == 10 ? 'selected' : '') : ($h == $endPieces[0] ? 'selected' : '')) .' value="'. $h .'">'. $h .'</option>';
+						}
+					echo '</select>:';
+					echo '<select name="'. $n .'-end-min">';
+						for($m = 0; $m < 4; $m++) {
+							echo '<option '. ($mode == 'update' && ($m * 15) == $endPieces[1] ? 'selected' : '') .' value="'. ($m * 15) .'">'. ($m * 15) .'</option>';
+						}
+					echo '</select>';
+				echo '</td>';
+
+				//echo '<td><input type="text" id="'. $n .'" name="'. $n .'-start" value="'. $s['start'] .'" /></td>';
+				//echo '<td><input type="text" id="'. $n .'" name="'. $n .'-end" value="'. $s['end'] .'" /></td>';
 				
 				echo '<td><a id="'. $n .'" name="removeDay" href="#">fjern</a></td>';
 

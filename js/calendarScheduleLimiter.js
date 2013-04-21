@@ -28,7 +28,7 @@ $(document).ready(function() {
 
 		for(n in schedule) {
 
-			$('td[id^="'+ n +',"]').filter(function() {
+			$('td[id^="'+ n +',"]').filter(function() { 
 			return $(this).attr('time') >= schedule[n].start && $(this).attr('time') <= schedule[n].end;
 				}).removeClass('unavailable');
 
