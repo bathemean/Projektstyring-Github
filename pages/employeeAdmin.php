@@ -1,5 +1,6 @@
 <h1>Medarbejder administration</h1>
 
+<a href="?p=home">< tilbage </a> - 
 <a href="?p=employeeForm">Tilf&oslash;j</a>
 
 <br /><br />
