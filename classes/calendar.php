@@ -9,6 +9,8 @@
         private $booked;
         private $weekdays;
 
+        private $bookings;
+
         public function __construct() {
             include_once('Database.php');
             $this->db = new Database();
@@ -17,7 +19,7 @@
             include_once('globals.php');
             $this->weekdays = $WEEKDAYS;
 
-            $this->booked = array();
+            $this->bookedSlots = array();
         }
 
         public function navigation() {
@@ -27,24 +29,29 @@
             echo '</div>';
         }
 
-        public function render($start) {
+        public function render($start, $mode) {
 
             $getBookings = $this->db->query("
-                                SELECT bookingdate date, treatmentduration duration
+                                SELECT bookingdate date, employeeid, treatmentduration duration
                                 FROM bookings JOIN treatments
                                     ON bookings.treatmentname = treatments.treatmentname
                             ");
             $bookings = $getBookings->fetchAll();
 
             foreach($bookings as $b) {
+                
+                // create an array of all booked cells
                 $i = $b['duration']/15;
-
                 for($j = 0; $j < $i; $j++) {
                     // Example: a treatment has a duration of 60 minutes (4 quarters).
                     // we add 4 items to the array, one for each calendar cell we want to
                     // mark.
-                    array_push($this->booked, ($b['date'] + ($j * 900)) );
+                    array_push($this->bookedSlots, ($b['date'] + ($j * 900)) );
                 }
+
+                $this->bookings[$b['date']] = array('date' => $b['date'],
+                                                    'employeeid' => $b['employeeid']);
+
             }         
 
 
@@ -111,11 +118,15 @@
                             class="unavailable ';                       
 
                                 // we check if the current cell is already booked
-                                if( in_array(($date + $time), $this->booked) ) {
+                                if( in_array(($date + $time), $this->bookedSlots) ) {
                                     echo 'booked';
                                 }
 
                         echo '" ">';
+
+                        if( $mode == 'admin' && isset($this->bookings[$date+$time]) )
+                            echo $this->doCheckinForm($this->bookings[$date+$time]['date'], 
+                                                      $this->bookings[$date+$time]['employeeid']);
 
                         echo '</td>';
 
@@ -136,6 +147,24 @@
             }
 
         echo '</table>';
+
+        }
+
+        /**
+        * Creates an input field corrosponding to the supplied data, to handle checkin and checkout.
+        **/
+        private function doCheckinForm($date, $employeeid) {
+
+            $getState = $this->db->prepare("
+                SELECT state
+                FROM bookingCheckins
+                WHERE bookingdate = ? AND employeeid = ?");
+            $getState->execute( array($date, $employeeid) );
+            $state = $getState->fetch();
+
+
+            return '<input id="checkin" name="'.$date.'" employeeid="'.$employeeid.'" type="checkbox" 
+              '. ($state['state'] == 1 ? 'checked' : '') .' value="1" />';
 
         }
 
