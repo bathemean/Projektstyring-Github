@@ -40,13 +40,23 @@
 
             foreach($bookings as $b) {
                 
-                // create an array of all booked cells
+                // create an array of all booked cells, with a nested array
+                // for the owner(employee) of the booking
                 $i = $b['duration']/15;
                 for($j = 0; $j < $i; $j++) {
                     // Example: a treatment has a duration of 60 minutes (4 quarters).
                     // we add 4 items to the array, one for each calendar cell we want to
                     // mark.
-                    array_push($this->bookedSlots, ($b['date'] + ($j * 900)) );
+                    $d = ($b['date'] + ($j * 900));
+
+                    if( !isset($this->bookedSlots[$d]) ) {
+                        $this->bookedSlots[$d] = array( $b['employeeid'] );
+                    } else {
+                        array_push( $this->bookedSlots[$d], $b['employeeid'] );
+                    }
+
+                    /*array_push($this->bookedSlots, array('date' => ($b['date'] + ($j * 900)),
+                                                         'employeeid' => $b['employeeid']));*/
                 }
 
                 $this->bookings[$b['date']] = array('date' => $b['date'],
@@ -66,7 +76,7 @@
 
             // stores the selected date for data to db query
             echo '<input type="hidden" name="bookingdate" value="" />';
-           
+
             echo '<table id="calendar" cellspacing="0">';
 
             for($y = 0; $y<=32; $y++) {
@@ -115,14 +125,16 @@
                         echo '<td id="'. $x .','. $y .'" 
                             time="'.$time.'" 
                             value="'. ($date + $time) .'"
-                            class="unavailable ';                       
+                            class="unavailable"';                       
 
-                                // we check if the current cell is already booked
-                                if( in_array(($date + $time), $this->bookedSlots) ) {
-                                    echo 'booked';
+                            // we check if the current cell is already booked
+                            if( isset($this->bookedSlots[($date + $time)]) ) {
+                                foreach( $this->bookedSlots[($date + $time)] as $e ) {
+                                    echo ' emp_'.$e;
                                 }
+                            } 
 
-                        echo '" ">';
+                        echo '>';
 
                         if( $mode == 'admin' && isset($this->bookings[$date+$time]) )
                             echo $this->doCheckinForm($this->bookings[$date+$time]['date'], 

@@ -1,7 +1,7 @@
-<script src="js/treatmentlistManager.js"></script>
 <h1>Behandlings administration</h1>
 
 <a href="?p=home">< tilbage </a> - 
+<a href="?p=treatmentForm">Tilf&oslash;j</a>
 
 <br /><br />
 
@@ -13,7 +13,7 @@
 
 	if(isset($_POST['submit'])) {
 
-		for($i = 0; $i < sizeof($_POST[])+1; $i++) {
+		/*for($i = 0; $i < sizeof($_POST[])+1; $i++) {
 			$data[$i] = array('treatment' => $_POST['treatment'][$i],
 							  'duration' => $_POST['duration'][$i]);
 		}
@@ -22,7 +22,7 @@
 
 		echo sizeof($_POST).'<pre>';
 		print_r($_POST);
-		echo '</pre>';
+		echo '</pre>';*/
 	}
 
 ?>
@@ -32,8 +32,6 @@
 	<?php
 		$tr->treatmentList();
 	?>
-
-	<a id="add" href="#">add</a>
 
 	<br />
 

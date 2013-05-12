@@ -1,6 +1,7 @@
 <script src="js/calendarPicker.js"></script>
 <script src="js/calendarScheduleLimiter.js"></script>
 <script src="js/calendarNavigator.js"></script>
+<script src="js/calendarBookingHandler.js"></script>
 
     
 

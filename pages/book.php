@@ -7,7 +7,7 @@
     if(isset($_POST['submit'])){
       
      $query = $db->get()->prepare("
-        INSERT INTO bookings VALUES (?,?,?)
+        INSERT INTO bookings (bookingdate, employeeid, treatmentname) VALUES (?,?,?)
       ");
       $query->execute(array($_POST['bookingdate'],$_POST['employeeid'],$_POST['treatmentName']));
 
