@@ -60,6 +60,22 @@ body {
     float: right;
 }
 
+#checkin table {
+    border: 0;
+}
+    #checkin td {
+        padding: 5px;
+        text-align: center;
+    }
+    #checkin .time {
+        width: 40px;
+        vertical-align: top;
+    }
+    #checkin .main {
+        width: 300px;
+        text-align: left;
+    }
+
 
 label {
     display: block;

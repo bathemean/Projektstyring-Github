@@ -5,6 +5,7 @@
 
 
 <?php
+
   include_once('classes/functions.php');
   include_once('classes/Database.php');
   $db = new Database();
@@ -34,12 +35,12 @@
         SELECT day, start, end
         FROM empSchedule
         WHERE employeeid = ?
+        ORDER BY day
       ");
     $getSchedule->execute( array($_GET['id']) );
     $schedule = $getSchedule->fetchAll();
 
   }
-
 
   if(isset($_POST['submit']) && $mode == 'insert') {
 

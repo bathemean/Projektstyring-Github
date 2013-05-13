@@ -5,13 +5,14 @@ $(document).ready(function() {
 			state = 1;
 		else
 			state = 0;
-		
-		checkIn( $(this).attr('name'), $(this).attr('employeeid'), state );
-
+	
+		checkIn( $(this).attr('name'), state );
+console.log( $(this).attr('name'));	
     });
 
-    var checkIn = function(date, employeeid, state) {
-    	$.post('checkinHandler.php?date='+date+'&employeeid='+employeeid+'&state='+state)
+    var checkIn = function(id, state) {
+    	$.post('checkinHandler.php?id='+id+'&state='+state) 
+    	
     }
 
 })

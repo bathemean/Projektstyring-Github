@@ -31,6 +31,8 @@
 
         public function render($start, $mode) {
 
+            $this->loadJquery();
+
             $getBookings = $this->db->query("
                                 SELECT bookingdate date, employeeid, treatmentduration duration
                                 FROM bookings JOIN treatments
@@ -178,6 +180,16 @@
             return '<input id="checkin" name="'.$date.'" employeeid="'.$employeeid.'" type="checkbox" 
               '. ($state['state'] == 1 ? 'checked' : '') .' value="1" />';
 
+        }
+
+        /**
+        * Loads jQuery files necessary for calendar.
+        **/
+        private function loadJquery() {
+            echo '<script src="js/calendarPicker.js"></script>';
+            echo '<script src="js/calendarScheduleLimiter.js"></script>';
+            echo '<script src="js/calendarNavigator.js"></script>';
+            echo '<script src="js/calendarBookingHandler.js"></script>';
         }
 
     }

@@ -65,18 +65,17 @@
                 foreach($employees as $e) {
 
                     $getSchedule = $db->get()->prepare("
-                            SELECT day, start, end
+                            SELECT scheduleid, day, start, end
                             FROM empSchedule
-                            WHERE employeeid = {$e['id']}
+                            WHERE employeeid = ?
                         ");
-                    $getSchedule->execute();
+                    $getSchedule->execute( array($e['id']) );
                     $schedule = $getSchedule->fetchAll();
-
+                    
                     foreach($schedule as $s) {
                         echo '<input type="hidden" id="'. $e['id'] .'"  
-                            name="scheduleStart" day="'.$s['day'].'" value="'. $s['start'] .'" />';
-                        echo '<input type="hidden" id="'. $e['id'] .'" 
-                            name="scheduleEnd" day="'.$s['day'].'" value="'. $s['end'] .'" />';
+                            name="scheduleStart" day="'.$s['day'].'" 
+                            start="'. $s['start'] .'" end="'. $s['end'] .'" />';
 
                     }
 

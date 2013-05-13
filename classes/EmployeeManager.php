@@ -98,17 +98,19 @@
               
               $start = ($post[$n.'-start-hours'] * 3600) + ($post[$n.'-start-min'] * 60);
               $end = ($post[$n.'-end-hours'] * 3600) + ($post[$n.'-end-min'] * 60);
-              $end -= 900; // subtract 15 minutes from end time, since calendar hands time slots by quarters
+              $end -= 900; // subtract 15 minutes from end time, since calendar 
+                           //handless time slots by quarters
 
               $query = $this->db->prepare("
                 INSERT INTO empSchedule
-                (employeeid, day, start, end) VALUES
-                (:id, :day, :start, :end)
+                (employeeid, day, start, end, fieldid) VALUES
+                (:id, :day, :start, :end, :f)
               ");
               if(!$query->execute(array(':id' => $id,
                                        ':day' => $post[$n.'-day'],
                                        ':start' => $start,
-                                       ':end' => $end))) {
+                                       ':end' => $end,
+                                       ':f' => $n))) {
                 return false;
               }
                 

@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function() { 
 	var selectedEmployee = $('input[name=employeeid]').val();
 	// when a new employee is selected
 	$('input[name="employeeid"]').change(function() {
@@ -14,21 +14,23 @@ $(document).ready(function() {
 
 		$('input[name="scheduleStart"][id="' + selectedEmployee + '"]').each(function() {
 
-			var day = new Array();
+			var start = $(this).attr('start');
+			var end = $(this).attr('end');
+			var day = $(this).attr('day');
+			//var end = $('input[name="scheduleEnd"][day="'+ $(this).attr('day') +'"]').val();
 
-			var start = $(this).val();
-			var end = $('input[name="scheduleEnd"][day="'+ $(this).attr('day') +'"]').val();
-			day['start'] = start;
-			day['end'] = end;
+			var arr = new Array();
+			arr['day'] = day;
+			arr['start'] = start;
+			arr['end'] = end;
 
-			schedule[$(this).attr('day')] = day;
+			schedule.push(arr);
 
 		});
 
-
 		for(n in schedule) {
 
-			$('td[id^="'+ n +',"]').filter(function() { 
+			$('td[id^="'+ schedule[n].day +',"]').filter(function() { 
 			return $(this).attr('time') >= schedule[n].start && $(this).attr('time') <= schedule[n].end;
 				}).removeClass('unavailable');
 
