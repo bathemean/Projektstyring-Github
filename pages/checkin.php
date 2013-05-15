@@ -40,11 +40,9 @@ Start: <input id="datepicker" type="text" value="<?php echo $startval; ?>" />
 <br /><br />
 
 <?php
-	$getEmployees = $db->get()->query("
-    	SELECT employeeid id, employeename name
-    	FROM employees
-    ");
-    $employees = $getEmployees->fetchAll();
+	require('classes/EmployeeManager.php');
+  $emp = new EmployeeManager();
+  $employees = $emp->getEmployees();
 
     $o = 0;
 	foreach($employees as $e) {

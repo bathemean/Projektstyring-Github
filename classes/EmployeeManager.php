@@ -121,6 +121,20 @@
 
         }
 
+        public function getSchedule($employee) {
+          
+          $getSchedule = $this->db->prepare("
+                            SELECT scheduleid, day, start, end
+                            FROM empSchedule
+                            WHERE employeeid = ?
+                        ");
+          $getSchedule->execute( array($employee) );
+          $schedule = $getSchedule->fetchAll();
+
+          return $schedule;
+
+        }
+
         private function removeSchedule($id) {
           $query = $this->db->prepare("
                 DELETE FROM empSchedule
@@ -134,7 +148,7 @@
         }
 
 
-        public function employeeList() {
+        public function getEmployees() {
 
             $getEmployees = $this->db->query("
                     SELECT employeeid id, employeename name
@@ -142,27 +156,110 @@
                 ");
             $employees = $getEmployees->fetchAll();
 
-            echo '<table border="0">';
+            return $employees;
 
-                echo '<tr>';
-                    echo '<th>Navn</th>';
-                    echo '<th></th>';
-                echo '</tr>';
+        }
 
-            foreach($employees as $e) {
-                echo '<tr>';
-                    echo '<td>'. $e['name'] .'</td>';
-                    echo '<td><a href="?p=employeeForm&id='. $e['id'] .'">Rediger</a></td>';
-                echo '</tr>';
-            }
+        public function getException($id) {
 
-            echo '</table>';
+          $getException = $this->db->prepare("
+            SELECT excDate date, excStart start, excEnd end, excNote note
+            FROM empScheduleExc
+            WHERE exceptionid = ?
+          ");
+          $getException->execute( array($id) );
+          $exception = $getException->fetch();
 
+          return $exception;
+
+        }
+
+        public function getExceptions($employee) {
+
+          $getExceptions = $this->db->prepare("
+            SELECT exceptionid id, excDate date, excStart start, excEnd end, excNote note
+            FROM empScheduleExc
+            WHERE employeeid = ?
+          ");
+          $getExceptions->execute( array($employee) );
+          $exceptions = $getExceptions->fetchAll();
+
+          return $exceptions;
+
+        }
+
+        public function insertException($post) {
+
+          $date = strtotime($_POST['date']);
+          
+          $start = $this->timeConvert($post['-start-hours'], $post['-start-min']);
+          $end = $this->timeConvert($post['-end-hours'], $post['-end-min']);
+          $end -= 900; // subtract 15 minutes from end time, since calendar 
+                           //handless time slots by quarters
+
+          $query = $this->db->prepare("
+            INSERT INTO empScheduleExc
+            (employeeid, excDate, excStart, excEnd, excNote)
+            VALUES (:employee, :date, :start, :end, :note)
+          ");
+          
+          if( $query->execute( array(':employee' => $post['employeeid'],
+                                     ':date' => $date,
+                                     ':start' => $start,
+                                     ':end' => $end,
+                                     ':note' => $post['note']) ) ) {
+
+            return true;
+
+          }
+
+          return false;
+
+        }
+
+        public function updateException($post) {
+
+          $date = strtotime($_POST['date']);
+
+          $start = $this->timeConvert($post['-start-hours'], $post['-start-min']);
+          $end = $this->timeConvert($post['-end-hours'], $post['-end-min']);
+          $end -= 900;
+
+          $query = $this->db->prepare("
+            UPDATE empScheduleExc
+            SET excDate = :date,
+                excStart = :start,
+                excEnd = :end,
+                excNote = :note
+            WHERE exceptionid = :id
+          ");
+
+          /*if(  ) {
+            return true;
+          }
+          return false;*/
+
+          if( $query->execute( array(':id' => $post['exceptionid'],
+                                     ':date' => $date,
+                                     ':start' => $start,
+                                     ':end' => $end,
+                                     ':note' => $post['note']) ) ) {
+            return true;
+          }
+
+          return false;
+
+        }
+
+
+
+        private function timeConvert($hours, $minutes) {
+          return ($hours * 3600) + ($minutes * 60);
         }
 
         public function timeSelect($id, $mode, $compare) {
 
-          echo '<select name="'. $id .'-'. $mode .'">';
+          echo '<select id="timeselect" name="'. $id .'-'. $mode .'">';
             
             if($mode == 'start-hours' || $mode == 'end-hours') {
               for($u = 1; $u <= 24; $u++) {

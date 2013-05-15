@@ -84,11 +84,8 @@ $(document).ready(function() {
 	$('#calendar td').click(function() {
 
 		$('input[name="bookingdate"]').val( $(this).attr('value') );
-		console.log( $('input[name="bookingdate"]').val() );
 		
-		// remove all .selected and .focus classes from table cells
-		$('#calendar td.selected').removeClass('selected');
- 		$('#calendar td.focus').removeClass('focus');
+		clearSelection();
 
 		cells = affectedCells( $(this) );
  		 			
@@ -102,5 +99,11 @@ $(document).ready(function() {
 	 	}
 
 	});
+
+	// remove all .selected and .focus classes from table cells
+	var clearSelection = function() {
+		$('#calendar td.selected').removeClass('selected');
+ 		$('#calendar td.focus').removeClass('focus');
+	}
 
 });

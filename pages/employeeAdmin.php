@@ -11,6 +11,26 @@
 	include_once('classes/Database.php');
 	$db = new Database();
 
-	$emp->employeeList();
-
+	$employees = $emp->getEmployees();
 ?>
+
+<table border="0">
+
+	<tr>
+	    <th>Navn</th>
+	    <th></th>
+	</tr>
+
+	<?php
+		foreach($employees as $e) {
+			echo '<tr>';
+			    echo '<td>'. $e['name'] .'</td>';
+			    echo '<td>
+			    		<a href="?p=employeeExc&mode=list&id='. $e['id'] .'">exceptions</a> 
+			    		<a href="?p=employeeForm&id='. $e['id'] .'">Rediger</a>
+			    	  </td>';
+			echo '</tr>';
+		}
+	?>
+
+</table>

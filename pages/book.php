@@ -4,13 +4,14 @@
     require('classes/Database.php');
     $db = new Database();
 
-    if(isset($_POST['submit'])){
-      
-     $query = $db->get()->prepare("
-        INSERT INTO bookings (bookingdate, employeeid, treatmentname) VALUES (?,?,?)
-      ");
-      $query->execute(array($_POST['bookingdate'],$_POST['employeeid'],$_POST['treatmentName']));
+    require('classes/Booking.php');
+    $book = new Booking();
 
+    require('classes/EmployeeManager.php');
+    $emp = new EmployeeManager();
+
+    if(isset($_POST['submit'])){
+        $book->insert($_POST);
     }
 ?>
 <form method="POST">
@@ -54,29 +55,27 @@
             
             <?php
 
-                $getEmployees = $db->get()->query("
-                    SELECT employeeid id, employeename name
-                    FROM employees
-                ");
-                $employees = $getEmployees->fetchAll();
+                $employees = $emp->getEmployees();
 
                 $n = 0;
 
                 foreach($employees as $e) {
 
-                    $getSchedule = $db->get()->prepare("
-                            SELECT scheduleid, day, start, end
-                            FROM empSchedule
-                            WHERE employeeid = ?
-                        ");
-                    $getSchedule->execute( array($e['id']) );
-                    $schedule = $getSchedule->fetchAll();
+                    $schedule = $emp->getSchedule($e['id']);
                     
                     foreach($schedule as $s) {
                         echo '<input type="hidden" id="'. $e['id'] .'"  
                             name="scheduleStart" day="'.$s['day'].'" 
                             start="'. $s['start'] .'" end="'. $s['end'] .'" />';
 
+                    }
+
+                    $exceptions = $emp->getExceptions($e['id']);
+                    foreach($exceptions as $exc) {
+
+                        echo '<input type="hidden" id="'. $e['id'] .'"  
+                            name="exception" date="'. $exc['date'].'" 
+                            start="'. $exc['start'] .'" end="'. $exc['end'] .'" />';
                     }
 
 

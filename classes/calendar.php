@@ -125,6 +125,7 @@
                          
                         // Table cells are given an id according to an (x,y) grid starting top left
                         echo '<td id="'. $x .','. $y .'" 
+                            date="'.$date.'" 
                             time="'.$time.'" 
                             value="'. ($date + $time) .'"
                             class="unavailable"';                       
