@@ -10,24 +10,30 @@
 	        $this->db = $this->db->get();
 	    }
 
-	    public function insert($post) {
+	    public function insert($post, $client) {
 
 	    	$end = $_POST['bookingdate'] + 
 	    	  $this->getTreatmentDur( $_POST['treatmentName'] );
 
 	    	$query = $this->db->prepare("
 		        INSERT INTO bookings 
-		        (bookingdate, bookingend, employeeid, treatmentname) 
-		        VALUES (:date, :end, :employeeid, :treatment)
+		        (bookingdate, bookingend, employeeid, treatmentname, clientid) 
+		        VALUES (:date, :end, :employeeid, :treatment, :client)
 		    ");
-		    
+
 	    	if( $this->checkAvailable($_POST['bookingdate'], 
-	    		  $_POST['employeeid'], $_POST['treatmentname']) ) {
+	    		  $_POST['employeeid'], $_POST['treatmentName']) ) {
 			    
-			    $query->execute( array(':date' => $_POST['bookingdate'],
+			    try {
+			    $query->execute( array(':date' => $post['bookingdate'],
 			    					   ':end' => $end,
-			    					   ':employeeid' => $_POST['employeeid'],
-			    					   ':treatment' => $_POST['treatmentName']) );
+			    					   ':employeeid' => $post['employeeid'],
+			    					   ':treatment' => $post['treatmentName'],
+			    					   ':client' => $client) );
+
+			    } catch(PDOException $e) {
+			    	die($e->getMessage());
+			    }
 
 		    	return true;
 		    }

@@ -1,3 +1,6 @@
+<?php
+    session_start();
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
@@ -18,6 +21,13 @@
     <div id="main">
         
         <?php 
+            if(isset($_SESSION['id']))
+                echo 'Logget ind som: '.$_SESSION['id'].' - <a href="?p=logout">log ud</a>';
+            else
+                echo 'Ikke logget ind.';
+
+            echo '<br /><br />';
+
             error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
             if(isset($_GET['p'])) {

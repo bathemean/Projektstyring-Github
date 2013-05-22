@@ -11,7 +11,10 @@
     $emp = new EmployeeManager();
 
     if(isset($_POST['submit'])){
-        $book->insert($_POST);
+        echo '<pre>';
+        print_r($_POST);
+        echo '</pre>';
+        $book->insert($_POST, $_SESSION['id']);
     }
 ?>
 <form method="POST">
